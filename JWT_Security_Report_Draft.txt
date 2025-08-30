@@ -1,0 +1,36 @@
+Title: JWT Security Vulnerabilities and Exploitation Techniques
+
+1. Introduction
+JSON Web Tokens (JWT) are a popular mechanism for authentication and authorization in modern web applications. While JWTs offer convenience and scalability, improper implementation or misconfiguration can introduce significant security vulnerabilities.
+
+2. Common JWT Vulnerabilities
+
+2.1. alg=none Vulnerability
+Some JWT libraries historically allowed the use of "alg=none" in the token header, which disables signature verification. Attackers can exploit this by modifying the JWT header to bypass authentication.
+
+2.2. Weak Secret Keys
+JWTs signed with weak or predictable secret keys (e.g., short, common words) are susceptible to brute-force attacks. Attackers can systematically try possible keys until the correct one is found, as demonstrated in the brute-force PoC script.
+
+2.3. Key Confusion Attacks
+If a server supports both symmetric (HS256) and asymmetric (RS256) algorithms, attackers may exploit key confusion by submitting an RSA public key as an HMAC secret, potentially bypassing signature verification.
+
+2.4. Replay Attacks
+JWTs without proper expiration (`exp` claim) or invalidation mechanisms can be reused by attackers, allowing unauthorized access even after logout or token theft.
+
+3. Real-World CVEs
+
+- CVE-2016-10555: PyJWT allowed tokens with "alg=none" to bypass signature verification.
+- CVE-2018-1000531: Several JWT libraries were vulnerable to key confusion attacks, allowing attackers to forge valid tokens.
+
+4. Mitigation Strategies
+
+- Always validate the `alg` field on the server side and reject tokens with "none" or unexpected algorithms.
+- Use strong, randomly generated secret keys (at least 256 bits for HS256).
+- Enforce token expiration (`exp` claim) and implement token rotation or revocation where possible.
+- Avoid supporting "alg=none" and ensure libraries are up to date.
+- Limit accepted algorithms to those required by your application.
+
+5. References
+
+- OWASP JWT Cheat Sheet: https://cheatsheetseries.owasp.org/cheatsheets/JSON_Web_Token_for_Java_Cheat_Sheet.html
+- NIST CVE Database: https://nvd.nist.gov/
